@@ -11,13 +11,19 @@ export const initialState: ActivityState = {
     activities : []
 }
 export const activityReducer=(
-state: ActivityState = initialState,
-action : ActivityActions
+    state: ActivityState = initialState,
+    action : ActivityActions
+    )=>{
+    if(action.type==='save-activity'){
+        // logica para manejar el state 
+       return {
+        ...state,
+        activities:[...state.activities,action.payload.newActivity]
+       } 
 
-)=>{
-if(action.type==='save-activity'){
-    // logica para manejar el state 
-    console.log('desde el type de save-activity')
-}
+    }
+
+    return state
+
 }
 
