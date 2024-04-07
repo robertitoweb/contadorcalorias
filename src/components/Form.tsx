@@ -1,18 +1,32 @@
-import { useState,ChangeEvent,FormEvent, Dispatch } from "react"
+import { useState,ChangeEvent,FormEvent, Dispatch, useEffect } from "react"
+import{ v4 as uuidv4} from 'uuid'
 import { categories } from "../data/categories"
 import { Activity } from "../types"
-import { ActivityActions } from "../reducers/activity-reducer"
+import { ActivityActions, ActivityState } from "../reducers/activity-reducer"
 
 type FormProps = {
-  dispatch : Dispatch<ActivityActions>
+  dispatch : Dispatch<ActivityActions>,
+  state: ActivityState
 }
-function Form({dispatch}: FormProps) {
 
-    const [activity,setActivity ] = useState<Activity>({
+const initialState: Activity ={
+        id : uuidv4(),
         category : 1,
         name : '',
         calories:0
-    })
+}
+
+
+function Form({dispatch,state}: FormProps) {
+
+    const [activity,setActivity ] = useState<Activity>(initialState)
+
+    useEffect(()=>{
+      if (state.activeId){
+      const selectedActivity = state.activities.filter( stateActivity => stateActivity.id === state.activeId)[0]
+      setActivity(selectedActivity)
+      }
+    },[state.activeId])
 
     const handleChange=(e: ChangeEvent<HTMLSelectElement> | ChangeEvent<HTMLInputElement>)=>{
      
@@ -29,10 +43,14 @@ function Form({dispatch}: FormProps) {
         //console.log(name.trim ()!='' && calories>0)
         return name.trim ()!='' && calories>0
     }
-    const handleSubmit=(e : FormEvent<HTMLFormElement>)=>{
+    const handleSubmit=(e: FormEvent<HTMLFormElement>)=>{
     e.preventDefault()
     dispatch({type:'save-activity', payload : {newActivity: activity}})
-    }
+    setActivity({
+      ...initialState,
+      id: uuidv4()
+    })
+  }
 
   return (
     
